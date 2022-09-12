@@ -9,6 +9,7 @@ const cellStyle = {
     width: '50px',
     height: '50px',
     border: '1px solid #000',
+    cursor: 'pointer',
 }
 
 const gridStyle = {
@@ -23,6 +24,13 @@ function App() {
         )
     )
 
+    const handleClick = (rowIndex, colIndex) => {
+        const newGrid = produce(grid, (draftGrid) => {
+            draftGrid[rowIndex][colIndex] = 'clicked!'
+        })
+        setGrid(newGrid)
+    }
+
     return (
         <div style={gridStyle}>
             {grid.map((row, rowIndex) =>
@@ -30,12 +38,7 @@ function App() {
                     <div
                         key={`${rowIndex}_${colIndex}`}
                         style={cellStyle}
-                        onClick={() => {
-                            const newGrid = produce(grid, (draftGrid) => {
-                                draftGrid[rowIndex][colIndex] = 'clicked!'
-                            })
-                            setGrid(newGrid)
-                        }}
+                        onClick={() => handleClick(rowIndex, colIndex)}
                     >
                         {cell}
                     </div>
