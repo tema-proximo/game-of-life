@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import { useState } from 'react'
+import produce from 'immer'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const COLS_COUNT = 30
+const ROWS_COUNT = 30
+
+const cellStyle = {
+    width: '50px',
+    height: '50px',
+    border: '1px solid #000',
 }
 
-export default App;
+const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${COLS_COUNT}, 50px)`,
+}
+
+function App() {
+    const [grid, setGrid] = useState(
+        Array.from(Array(ROWS_COUNT), () =>
+            Array.from(Array(COLS_COUNT), () => 'cell')
+        )
+    )
+
+    return (
+        <div style={gridStyle}>
+            {grid.map((row, rowIndex) =>
+                row.map((cell, colIndex) => (
+                    <div
+                        key={`${rowIndex}_${colIndex}`}
+                        style={cellStyle}
+                        onClick={() => {
+                            const newGrid = produce(grid, (draftGrid) => {
+                                draftGrid[rowIndex][colIndex] = 'clicked!'
+                            })
+                            setGrid(newGrid)
+                        }}
+                    >
+                        {cell}
+                    </div>
+                ))
+            )}
+        </div>
+    )
+}
+
+export default App
