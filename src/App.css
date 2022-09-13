@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Moonrocks&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P');
 
 body {
     background: #000;
@@ -22,9 +22,11 @@ body {
 }
 
 .header {
-    font-family: 'Rubik Moonrocks', cursive;
-    font-size: 54px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 48px;
     color: #e6e6e6;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     margin-top: 18px;
+    border: 8px dashed;
+    padding: 24px;
 }
