@@ -1,1 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Moonrocks&display=swap');
 
+body {
+    background: #000;
+}
+.game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #03ff00;
+    background: #000;
+    border: 1px solid #03ff00;
+    margin: 5px 10px;
+    padding: 7px 0;
+    cursor: pointer;
+    min-width: 170px;
+}
+
+.header {
+    font-family: 'Rubik Moonrocks', cursive;
+    font-size: 54px;
+    color: #e6e6e6;
+    margin-bottom: 8px;
+    margin-top: 18px;
+}
