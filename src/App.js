@@ -1,5 +1,5 @@
 import './App.css'
-import GameOfLife from './pages/GameOfLife'
+import GameOfLife from './views/GameOfLife'
 
 function App() {
     return <GameOfLife />

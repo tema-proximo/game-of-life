@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import produce from 'immer'
 import { ROWS_COUNT, COLS_COUNT, UPDATE_SPEED_MS } from './constants'
+import styled from 'styled-components'
 
 const neighboursCalculator = [
     [-1, -1],
@@ -13,20 +14,50 @@ const neighboursCalculator = [
     [1, 1],
 ]
 
-const cellStyle = (isActive) => {
-    return {
-        width: '30px',
-        height: '30px',
-        border: '1px solid #e6e6e6',
-        cursor: 'pointer',
-        backgroundColor: isActive ? '#03ff00' : '#000',
-    }
-}
+const Game = styled.div`
+    display: flex;
+    padding: 10px;
+`
 
-const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${COLS_COUNT}, 30px)`,
-}
+const Sidebar = styled.div`
+    margin-right: 15px;
+`
+
+const Cell = styled.div`
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e6e6e6;
+    cursor: pointer;
+    background-color: ${(props) => (props.isActive ? '#b24949' : '#496fb2')};
+`
+
+const Grid = styled.div`
+    display: grid;
+    grid-template-columns: ${(props) => `repeat(${props.cols}, 30px)`};
+`
+
+const Button = styled.button`
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #03ff00;
+    background: #000;
+    border: 1px solid #03ff00;
+    margin: 5px 10px;
+    padding: 7px 0;
+    cursor: pointer;
+    min-width: 170px;
+`
+
+const Logo = styled.div`
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #e6e6e6;
+    margin-bottom: 12px;
+    margin-top: 0;
+    border: 8px dashed;
+    padding: 18px;
+    text-align: center;
+`
 
 const GameOfLife = () => {
     const [grid, setGrid] = useState(
@@ -34,6 +65,7 @@ const GameOfLife = () => {
             Array.from(Array(COLS_COUNT), () => 0)
         )
     )
+
     const [isGameStarted, setIsGameStarted] = useState(false)
 
     const isGameStartedRef = useRef(null)
@@ -107,28 +139,28 @@ const GameOfLife = () => {
     }, [])
 
     return (
-        <div className="game">
-            <div className="header">Game of life</div>
-            <div className="controls">
-                <button onClick={handleClickStart} className="button">
-                    {isGameStarted ? 'Стоп' : 'Старт'}
-                </button>
-                <button onClick={handleClickReset} className="button">
-                    Сброс
-                </button>
-            </div>
-            <div style={gridStyle}>
+        <Game>
+            <Sidebar>
+                <Logo>Game of life</Logo>
+                <div className="controls">
+                    <Button onClick={handleClickStart}>
+                        {isGameStarted ? 'Stop' : 'Start'}
+                    </Button>
+                    <Button onClick={handleClickReset}>Reset</Button>
+                </div>
+            </Sidebar>
+            <Grid cols={COLS_COUNT}>
                 {grid.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
-                        <div
+                        <Cell
                             key={`${rowIndex}_${colIndex}`}
-                            style={cellStyle(cell)}
+                            isActive={cell}
                             onClick={() => handleClickCell(rowIndex, colIndex)}
                         />
                     ))
                 )}
-            </div>
-        </div>
+            </Grid>
+        </Game>
     )
 }
 
