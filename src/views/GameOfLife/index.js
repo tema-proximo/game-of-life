@@ -68,8 +68,9 @@ const GameOfLife = () => {
 
     const [isGameStarted, setIsGameStarted] = useState(false)
 
-    const isGameStartedRef = useRef(null)
-    isGameStartedRef.current = isGameStarted
+    const generationRef = useRef(0)
+    const isGameStartedRef = useRef(isGameStarted)
+    const timerRef = useRef(null)
 
     const handleClickCell = (rowIndex, colIndex) => {
         if (isGameStarted) {
@@ -81,45 +82,27 @@ const GameOfLife = () => {
         setGrid(newGrid)
     }
 
-    const handleClickStart = () => {
-        setIsGameStarted(!isGameStarted)
-        if (!isGameStarted) {
-            isGameStartedRef.current = true
-            startGame()
-        }
-    }
-
-    const handleClickReset = () => {
-        setGrid(() => {
-            return Array.from(Array(ROWS_COUNT), () =>
-                Array.from(Array(COLS_COUNT), () => 0)
-            )
-        })
-        setIsGameStarted(false)
-        isGameStartedRef.current = false
-    }
-
-    const startGame = useCallback(() => {
-        if (!isGameStartedRef.current) {
-            return
-        }
-
+    const generateGeneration = useCallback(() => {
         setGrid((prevGrid) => {
             return produce(prevGrid, (draftGrid) => {
                 for (let row = 0; row < ROWS_COUNT; row++) {
                     for (let col = 0; col < COLS_COUNT; col++) {
                         let neighbours = 0
                         neighboursCalculator.forEach(([i, k]) => {
-                            const newRow = row + i
-                            const newCol = col + k
-                            if (
-                                newRow >= 0 &&
-                                newRow < ROWS_COUNT &&
-                                newCol >= 0 &&
-                                newCol < COLS_COUNT
-                            ) {
-                                neighbours += prevGrid[newRow][newCol]
-                            }
+                            const newRow =
+                                row + i >= ROWS_COUNT
+                                    ? row + i - ROWS_COUNT
+                                    : row + i < 0
+                                    ? ROWS_COUNT + i
+                                    : row + i
+                            const newCol =
+                                col + k >= COLS_COUNT
+                                    ? col + k - COLS_COUNT
+                                    : col + k < 0
+                                    ? COLS_COUNT + k
+                                    : col + k
+
+                            neighbours += prevGrid[newRow][newCol]
                         })
 
                         if (neighbours < 2 || neighbours > 3) {
@@ -134,9 +117,40 @@ const GameOfLife = () => {
                 }
             })
         })
-
-        setTimeout(startGame, UPDATE_SPEED_MS)
     }, [])
+
+    const startGame = useCallback(() => {
+        if (!isGameStartedRef.current) {
+            return
+        }
+        timerRef.current = setInterval(() => {
+            generateGeneration()
+            generationRef.current++
+        }, UPDATE_SPEED_MS)
+    }, [generateGeneration])
+
+    const handleClickStart = () => {
+        setIsGameStarted(!isGameStarted)
+        if (!isGameStarted) {
+            isGameStartedRef.current = true
+            startGame()
+        } else {
+            clearInterval(timerRef.current)
+            isGameStartedRef.current = false
+        }
+    }
+
+    const handleClickReset = () => {
+        generationRef.current = 0
+        setGrid(() => {
+            return Array.from(Array(ROWS_COUNT), () =>
+                Array.from(Array(COLS_COUNT), () => 0)
+            )
+        })
+        setIsGameStarted(false)
+        isGameStartedRef.current = false
+        clearInterval(timerRef.current)
+    }
 
     return (
         <Game>
@@ -148,6 +162,11 @@ const GameOfLife = () => {
                     </Button>
                     <Button onClick={handleClickReset}>Reset</Button>
                 </div>
+                <span>
+                    {generationRef.current
+                        ? `Generation: ${generationRef.current}`
+                        : ''}
+                </span>
             </Sidebar>
             <Grid cols={COLS_COUNT}>
                 {grid.map((row, rowIndex) =>
