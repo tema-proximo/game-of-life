@@ -28,7 +28,7 @@ const Cell = styled.div`
     height: 30px;
     border: 1px solid #e6e6e6;
     cursor: pointer;
-    background-color: ${(props) => (props.isActive ? '#b24949' : '#496fb2')};
+    background-color: ${(props) => (props.isActive ? '#59ffa0' : '#b4adea')};
 `
 
 const Grid = styled.div`
@@ -51,11 +51,9 @@ const Button = styled.button`
 const Logo = styled.div`
     font-family: 'Press Start 2P', cursive;
     font-size: 24px;
-    color: #e6e6e6;
+    color: #b4adea;
     margin-bottom: 12px;
     margin-top: 0;
-    border: 8px dashed;
-    padding: 18px;
     text-align: center;
 `
 
@@ -77,7 +75,7 @@ const GameOfLife = () => {
             return
         }
         const newGrid = produce(grid, (draftGrid) => {
-            draftGrid[rowIndex][colIndex] = 1
+            draftGrid[rowIndex][colIndex] = !draftGrid[rowIndex][colIndex]
         })
         setGrid(newGrid)
     }
@@ -155,7 +153,7 @@ const GameOfLife = () => {
     return (
         <Game>
             <Sidebar>
-                <Logo>Game of life</Logo>
+                <Logo>Conway's Game of Life</Logo>
                 <div className="controls">
                     <Button onClick={handleClickStart}>
                         {isGameStarted ? 'Stop' : 'Start'}
