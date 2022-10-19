@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import produce from 'immer'
-import { ROWS_COUNT, COLS_COUNT, UPDATE_SPEED_MS } from './constants'
+import { ROWS_COUNT, COLS_COUNT, UPDATE_SPEED_MS, COL_SIZE } from './constants'
 import styled from 'styled-components'
 
 const neighboursCalculator = [
@@ -24,16 +24,16 @@ const Sidebar = styled.div`
 `
 
 const Cell = styled.div`
-    width: 30px;
-    height: 30px;
-    border: 1px solid #e6e6e6;
+    width: ${COL_SIZE}px;
+    height: ${COL_SIZE}px;
+    border: 1px solid #e4f0f9;
     cursor: pointer;
-    background-color: ${(props) => (props.isActive ? '#59ffa0' : '#b4adea')};
+    background-color: ${(props) => (props.isActive ? '#f0f6fa' : '#fff')};
 `
 
 const Grid = styled.div`
     display: grid;
-    grid-template-columns: ${(props) => `repeat(${props.cols}, 30px)`};
+    grid-template-columns: ${(props) => `repeat(${props.cols}, ${COL_SIZE}px)`};
 `
 
 const Button = styled.button`
@@ -91,14 +91,14 @@ const GameOfLife = () => {
                                 row + i >= ROWS_COUNT
                                     ? row + i - ROWS_COUNT
                                     : row + i < 0
-                                    ? ROWS_COUNT + i
-                                    : row + i
+                                        ? ROWS_COUNT + i
+                                        : row + i
                             const newCol =
                                 col + k >= COLS_COUNT
                                     ? col + k - COLS_COUNT
                                     : col + k < 0
-                                    ? COLS_COUNT + k
-                                    : col + k
+                                        ? COLS_COUNT + k
+                                        : col + k
 
                             neighbours += prevGrid[newRow][newCol]
                         })
@@ -165,6 +165,7 @@ const GameOfLife = () => {
                         ? `Generation: ${generationRef.current}`
                         : ''}
                 </span>
+                
             </Sidebar>
             <Grid cols={COLS_COUNT}>
                 {grid.map((row, rowIndex) =>
