@@ -2,6 +2,8 @@ import { useCallback, useRef, useState } from 'react'
 import produce from 'immer'
 import { ROWS_COUNT, COLS_COUNT, UPDATE_SPEED_MS, COL_SIZE } from './constants'
 import styled from 'styled-components'
+import Controls from '../../components/Controls'
+import GenerationCounter from '../../components/GenerationsCounter'
 
 const neighboursCalculator = [
     [-1, -1],
@@ -16,11 +18,11 @@ const neighboursCalculator = [
 
 const Game = styled.div`
     display: flex;
-    padding: 10px;
 `
 
 const Sidebar = styled.div`
-    margin-right: 15px;
+    min-width: 200px;
+    padding-right: 1em;
 `
 
 const Cell = styled.div`
@@ -36,27 +38,6 @@ const Grid = styled.div`
     grid-template-columns: ${(props) => `repeat(${props.cols}, ${COL_SIZE}px)`};
 `
 
-const Button = styled.button`
-    font-family: 'Press Start 2P', cursive;
-    font-size: 24px;
-    color: #03ff00;
-    background: #000;
-    border: 1px solid #03ff00;
-    margin: 5px 10px;
-    padding: 7px 0;
-    cursor: pointer;
-    min-width: 170px;
-`
-
-const Logo = styled.div`
-    font-family: 'Press Start 2P', cursive;
-    font-size: 24px;
-    color: #b4adea;
-    margin-bottom: 12px;
-    margin-top: 0;
-    text-align: center;
-`
-
 const GameOfLife = () => {
     const [grid, setGrid] = useState(
         Array.from(Array(ROWS_COUNT), () =>
@@ -70,7 +51,7 @@ const GameOfLife = () => {
     const isGameStartedRef = useRef(isGameStarted)
     const timerRef = useRef(null)
 
-    const handleClickCell = (rowIndex, colIndex) => {
+    const handleClickCell = useCallback((rowIndex, colIndex) => {
         if (isGameStarted) {
             return
         }
@@ -78,7 +59,7 @@ const GameOfLife = () => {
             draftGrid[rowIndex][colIndex] = !draftGrid[rowIndex][colIndex]
         })
         setGrid(newGrid)
-    }
+    }, [grid, isGameStarted])
 
     const generateGeneration = useCallback(() => {
         setGrid((prevGrid) => {
@@ -127,7 +108,7 @@ const GameOfLife = () => {
         }, UPDATE_SPEED_MS)
     }, [generateGeneration])
 
-    const handleClickStart = () => {
+    const handleClickStart = useCallback(() => {
         setIsGameStarted(!isGameStarted)
         if (!isGameStarted) {
             isGameStartedRef.current = true
@@ -136,9 +117,9 @@ const GameOfLife = () => {
             clearInterval(timerRef.current)
             isGameStartedRef.current = false
         }
-    }
+    }, [isGameStarted, startGame])
 
-    const handleClickReset = () => {
+    const handleClickReset = useCallback(() => {
         generationRef.current = 0
         setGrid(() => {
             return Array.from(Array(ROWS_COUNT), () =>
@@ -148,24 +129,13 @@ const GameOfLife = () => {
         setIsGameStarted(false)
         isGameStartedRef.current = false
         clearInterval(timerRef.current)
-    }
+    }, [])
 
     return (
         <Game>
             <Sidebar>
-                <Logo>Conway's Game of Life</Logo>
-                <div className="controls">
-                    <Button onClick={handleClickStart}>
-                        {isGameStarted ? 'Stop' : 'Start'}
-                    </Button>
-                    <Button onClick={handleClickReset}>Reset</Button>
-                </div>
-                <span>
-                    {generationRef.current
-                        ? `Generation: ${generationRef.current}`
-                        : ''}
-                </span>
-                
+                <Controls isGameStarted={isGameStartedRef.current} handleClickStart={handleClickStart} handleClickReset={handleClickReset} />
+                <GenerationCounter generation={generationRef.current}/>
             </Sidebar>
             <Grid cols={COLS_COUNT}>
                 {grid.map((row, rowIndex) =>
